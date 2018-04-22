@@ -18,7 +18,7 @@ Group responsibilities are listed as follow: Pin-Hao Chen—data preprocessing a
 We download Times Square Food & Beverage Locations and Times Square Hotels datasets from NYC Open Data (https://opendata.cityofnewyork.us/) and fetch Yelp data through Yelp API. The data binding and data wrangle processes are described in following sections.  
 
 ## 2.1. Data Cleaning, Yelp Combining, and Calculating
-(R script: https://github.com/pinhao1994/pinhao1994.github.io/blob/master/EDAV/Final_Project_Preprocess.Rmd)
+(R script: https://github.com/pinhao1994/best-at-times-square/blob/master/Data_Preprocess.Rmd)
 
 ### 2.1.1. Data Cleaning
 First, formating the phone numbers to be a sequence of integer numbers by replacing the special characters, like “(”, “)”, and “-”. Second, removing “Website”, “Location.1”, and “Borough” columns in both dataset due to following reasons:
@@ -38,7 +38,7 @@ We utilizing Yelp API to fetch the “Yelp Category”, “Yelp Rating”, and �
 We deployed levenshtein distance to find the the neighbor of each hotel and restaurant within 100 meters. Moreover, average the Yelp rating, price, and count of all neighbor restaurants for every hotels.
 
 ## 2.2. Web Interactive: GeoJson Processing
-(R Script: https://github.com/pinhao1994/pinhao1994.github.io/blob/master/EDAV/Final_Project_Map.Rmd)
+(R Script: https://github.com/pinhao1994/best-at-times-square/blob/master/Data_Preprocess_Map.Rmd)
 
 In order to perform the web interactive part, we pre-calculate and format the data into self-defined form. 
 
