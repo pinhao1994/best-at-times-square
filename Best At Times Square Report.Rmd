@@ -265,7 +265,7 @@ vcd::mosaic(factor_cat~zip_code, direction = c('v','h'), counts3, rot_labels=c(0
 
 From the plot we can see that the majority data lies in 10019 and 10036. And district will influence the retuarants category. We can see that there are more North American restuarants in 10036, and relatively less other types retuarants.
 
-### Interactive Parallel Coordinate
+### Parallel Coordinate
 
 ```{r}
 library(GGally)
@@ -337,12 +337,9 @@ Coffee shops are usually with low ratings and low cost.
 Steakhouse are all ranked high and the price level are also high. 
 More than 50% of the restaurants are located in zip code 10036 area. Their categories are mainly North American, European, coffee shop, Asian food, and steakhouse.
 
-# 5. Executive Summary
-
 ```{r message=FALSE}
 library(tidyverse)
 library(ggplot2)
-
 
 hf100 <- read.csv("data/hotel_food_100.csv")
 hf <- na.omit(hf100)
@@ -352,7 +349,7 @@ ggplot(hf, aes(food_price)) +
   facet_wrap(~hotel_price) +
   ggtitle("Price distribution of hotels and neighbourhood restaurants") +
   xlab("Dollar sign of restaurants") + 
-  ylab("Counts of hotels within $100^2pi$ sq meters") +
+  ylab("Counts of hotels within 100^2pi sq meters") +
   stat_bin(aes(y=..count.., label=..count..), geom="text", vjust=-.5, binwidth = 1) 
 
 
@@ -383,6 +380,86 @@ We could find some interesting facts here.
 4) The distributions of each price level of hotels are very similar. 4 dollar sign restaurants are very rare, and the proportion of 2 dollar sign restaurants is nearly 50% of the data at each level. 
 
 5) Hotels with 2 dollar signs have the most counts in Time Square. 
+
+# 5. Executive Summary
+```{r echo=FALSE, eval=TRUE, fig.width=10, message=FALSE}
+# histogram
+ggplot(data = food, aes(food$Rating, fill=factor(food$zip_code))) + 
+  geom_histogram(aes(x= food$Rating,y = (..count..)/sum(..count..)), 
+                 breaks=c(0.0,0.5,1.0,1.5,2.0,2.5,3.0,3.5,4.0,4.5,5.0),
+                 position = 'dodge') + 
+  labs(x="Rating", y="Density", fill="Zip Code") +
+  ggtitle("Histogram of Rating on Different District") + 
+  theme_grey(16)
+```
+
+```{r echo=FALSE, eval=TRUE}
+# mosaic
+vcd::mosaic(factor_cat~zip_code, direction = c('v','h'), counts3, rot_labels=c(0,90,0,0),
+            offset_varnames = c(left = 5), offset_labels = c(left = 0),
+            just_labels = c("center","right"), margins = c(left = 5), 
+            set_varname=c(zip_code="Zip Code", factor_cat="Category"),
+            main="Mosaic of Catogory vs Zip Code")
+
+```
+
+```{r fig.width = 20, fig.height = 8, message = FALSE, echo=FALSE, eval=TRUE}
+library(GGally)
+library(ggplot2)
+library(tidyverse)
+
+food_pl <- as.data.frame(food[, c(2,4,5,6,7,8,9,10,11)])
+food_pl$Score <- round(food_pl$Score)
+food_pl$Rating <- round(food_pl$Rating)
+food_pl[, 1:9] <- lapply(food_pl[, 1:9], factor)
+food_plna <- na.omit(food_pl, cols=c("Score"))
+#colnames(food_plna)
+
+food_al <- food_plna %>% 
+  #drop_na(Score) %>%
+  group_by(Category_2nd_Level, Rating, Price, Street_Num, zip_code, Review_Count,Category_data) %>% #
+  summarise(Freq = n())
+
+library(alluvial)
+pal <- RColorBrewer::brewer.pal(10, "Set3")
+alluvial(food_al[, c("Category_2nd_Level", "Rating", "Price", "zip_code")], freq = food_al$Freq, 
+         blocks = TRUE,
+         alpha = 0.8,
+         col = pal[match(food_al$Category_2nd_Level,
+                       unique(food_al$Category_2nd_Level)) ]) 
+mtext("Category Parallel Coordinate Plot", 3, line=3, font=16)
+```
+
+```{r echo=FALSE, eval=TRUE, fig.width=10}
+library("gridExtra")
+library(tidyverse)
+library(ggplot2)
+hf100 <- read.csv("data/hotel_food_100.csv")
+hf <- na.omit(hf100)
+
+p1 <- ggplot(hf, aes(food_price)) +
+  geom_histogram(binwidth = 1, color ="blue", fill = "lightblue") +
+  facet_wrap(~hotel_price) +
+  ggtitle("Price distribution of hotels and neighbourhood restaurants") +
+  xlab("Dollar sign of restaurants") + 
+  ylab("Counts of hotels within 100^2pi sq meters") +
+  stat_bin(aes(y=..count.., label=..count..), geom="text", vjust=-.5, binwidth = 1) +
+  theme_grey(16)
+
+
+p2 <- ggplot(hf, aes(food_rating)) +
+  geom_histogram(binwidth = 1, color ="blue", fill = "lightblue") +
+  facet_wrap(~hotel_rating2, nrow = 2) +
+  ggtitle("Rating distribution of hotels and neighbourhood restaurants") +
+  xlab("Rating level of restaurants") + 
+  ylab("Counts of hotels within 100^2pi sq meters") +
+  stat_bin(aes(y=..count.., label=..count..), geom="text", vjust=-.5, binwidth = 1) +
+  theme_grey(16)
+  
+
+grid.arrange(p1, p2, ncol=2, nrow=1)
+```
+
 
 # 6. Interactive Component: D3, jQuery, and Bootstrap 
 ### Interactive Web System: https://pinhao1994.github.io/EDAV/
