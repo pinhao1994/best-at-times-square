@@ -61,7 +61,7 @@ We want to explore the restuarant data gerenally in rating, review, postcode, pr
 ```{r}
 library(tidyverse)
 library(ggplot2)
-food<-read.csv('food_processed.csv')
+food<-read.csv('data/food_processed.csv')
 
 
 # plot rating distribution
@@ -119,7 +119,7 @@ According to the second level category, we can see that North American, Deli and
 #library(dplyr)
 #library(tidyr)
 #library(DAAG)
-food <- read.csv('food_processed.csv', header=T, na.strings=c("", "NA"))
+food <- read.csv('data/food_processed.csv', header=T, na.strings=c("", "NA"))
 
 row.names(food) <- food$ID
 
@@ -322,7 +322,7 @@ library(tidyverse)
 library(ggplot2)
 
 
-hf100 <- read.csv("~/Downloads/hotel_food_100.csv")
+hf100 <- read.csv("data/hotel_food_100.csv")
 hf <- na.omit(hf100)
 
 ggplot(hf, aes(food_price)) +
