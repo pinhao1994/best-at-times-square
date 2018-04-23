@@ -1,5 +1,5 @@
 ---
-title: "EDAV Final Project - Best @ Times Square"
+title: "EDAV Final Project - The Best in Times Square"
 author: "Pin-Hao Chen (phc2121) | Youyang Liu (yl3767) | Jolie Tan (jt2998) | Anna Zhou (yz3220)"
 output: html_document
 ---
@@ -7,10 +7,11 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(warning= FALSE, message = FALSE, cache = TRUE)
 ```
+(Github: https://github.com/pinhao1994/best-at-times-square)
 
 # 1. Introduction
 
-Our project explores the relationships between hotels and restaurants located at Times Square, based on analyzing data from "NYC Open Data Source" and Yelp. Current applications in the market might focus solely on hotels or restaurants, but we would like to see if there exists interactive correlations between hotels and restaurants surrounded in terms of price and rating. The results might have an influence on travelers' hotel choice when they travel, especially for the top NYC attraction and landmark-Times Square. 
+Our project explores the relationships between hotels and restaurants located in Times Square, based on analyzing data from "NYC Open Data Source" and Yelp. Current applications in the market might focus solely on hotels or restaurants, but we would like to see if there exists interactive correlations between hotels and restaurants surrounded in terms of price and rating. The results might have an influence on travelers' hotel choice when they travel, especially for the top NYC attraction and landmark-Times Square. 
 
 Group responsibilities are listed as follow: Pin-Hao Chen—data preprocessing and interactive component designing; Youyang Liu—data exploration and data visualization; Jolie Tan—data preprocessing, data exploration, and data visualization; Anna Zhou—data exploration and interactive component implementing.
 
@@ -31,7 +32,7 @@ Secondly, removing “Website”, “Location.1”, and “Borough” columns in
 
 3. Borough column: Since all of our data points are around Times Square, they have same borough -- Manhattan -- which is not informative.
 
-Because Food and Beverage Data is more complicated, there are more following steps would be working on. Third, replacing special unicode character such as  “Café / Deli” with “Deli” in the “Subindustry” column. Forth, substituting the value in “Subindustry” with the value in “Sub.Subindustry” column, if the former value is “Quick Serve” or “Full Serve”. Finally, removing “Sub.Subindustry” column from the dataset since we have combined it with the Subindustry column.
+Because Food and Beverage Data is more complicated, there are more following steps would be working on. Third, replacing special unicode character such as  “Café / Deli” with “Deli” in the “Subindustry” column. Fourthly, substituting the value in “Subindustry” with the value in “Sub.Subindustry” column, if the former value is “Quick Serve” or “Full Serve”. Finally, removing “Sub.Subindustry” column from the dataset since we have combined it with the Subindustry column.
 
 ### 2.1.2. Yelp Combining
 Yelp API allows us to grab info to fetch the “Yelp Category”, “Yelp Rating”, and “Review Count on Yelp”. The program we setup would search stores (hotels and restaurants) by the Phone Number; if there was no matches by searching phone numbers, the program would search hotels and restaurants by the combination of other features, such as Address, category, etc.; after the previous two steps, if the program cannot find the corresponding objects, it would recommend 5 candidates for users to manually decide the Yelp store for preprocessing.
@@ -39,7 +40,7 @@ Yelp API allows us to grab info to fetch the “Yelp Category”, “Yelp Rating
 ### 2.1.3. Caculating
 We deployed levenshtein distance to find the the neighbor of each hotel or restaurant within $100^2\pi$ square meters. 
 
-Moreover, averaged the Yelp ratings, prices, and review counts of all neighbourhood restaurants for each hotels.
+Moreover, averaged the Yelp ratings, prices, and review counts of all neighborhood restaurants for each hotels.
 
 We also add an index to calculate the score. If a restaurant is rated with 4 stars but only having 2 persons rate it, the rating of the restaurant is not reliable. The formula would be (60% x review counts)*(40% x rating). 
 
@@ -95,7 +96,7 @@ We can see that the majority resturants have price on level 2 and no resturant o
 ```{r}
 # plot review distribution 
 
-ggplot(data = food, aes(food$Review_Count)) + geom_histogram() + labs(x="Review Count")
+ggplot(data = food, aes(food$Review_Count)) + geom_histogram(color = "lightblue") + labs(x="Review Count")
 ```
 
 From the plot we can see that most of our restuarants review are below 1,000. The higher the review is, the fewer resturants there are. And there are some outliers that have more than 1,000 ratings.
@@ -113,7 +114,7 @@ ggplot(data = food,aes(food$Category_2nd_Level)) +
   geom_bar()+coord_flip() + labs(x="Self-defined Category")
 ```
 
-According to the second level category, we can see that North American, Deli and Europe are most common 3 category.
+According to the second level category, we can see that North American, Deli and European are most common 3 category.
 
 ## 3.2. Missing Pattern
 
@@ -156,8 +157,6 @@ ggplot(data = food, aes(food$Rating, fill=factor(food$zip_code))) +
 We can see that the resturant's rating in district 10036 has a peak around 3.5. And the resturant's rating in distrct 10019 has a peak around 3. Both of the 10036 and 10019 distributions are left skewed.  
 
 ```{r}
-## For price, there is no much difference in 10019 and 10036, both of the districts have 2 price resturants.
-#ggplot(data = food, aes(food$Price, fill=factor(food$Postcode))) + geom_histogram(aes(x= food$Price), binwidth = 1,position = 'dodge')
 ggplot(data = food, aes(food$Price, fill=factor(food$zip_code))) + 
   geom_histogram(aes(x= food$Price,y = ..density..),binwidth = 1,position = 'dodge') +
   labs(x="Price", fill="Zip Code")
@@ -214,42 +213,10 @@ ggplot(food,aes(x = Price,y = Review_Count))+geom_point(position = 'jitter', alp
 
 2. Outliers are the points over 1000 reviews and over 3 ratings. 
 
-```{r echo=FALSE, eval=FALSE}
-## mosiac plot
-#library(vcd)
-
-#data<-subset(food,food$zip_code %in% c(10036,10019,10018,10020))
-#data<- subset(data,data$Price %in% c(1,2,3,4))
-#counts2 <- data%>% drop_na(`zip_code`,`Price`)%>%group_by(data$`Price`,  data$`zip_code`) %>% 
-#    summarize(Freq =n())
-#colnames(counts2)<-c('Price','zip_code','Freq')
-
-#vcd::mosaic(Price~zip_code,direction = c('v','h'),counts2,rot_labels=c(0,90,0,0))
-```
-
-```{r echo=FALSE, eval=FALSE}
-#data_new<-subset(food,food$zip_code %in% c(10036,10019,10018,10020))
-#data_new<- subset(data_new,data_new$Category_2nd_Level %in% c('North American','Deli','Europe','Asian'))
-
-#data_new<-subset(data_new,data_new$Category_data %in% c('American','Deli','Italian','Coffee'))
-
-
-#try<-data_new%>%drop_na(`zip_code`,`Category_data`)%>%group_by(data_new$`Category_data`,  data_new$`zip_code`) %>% 
- #   summarize(Freq =n())
-
-
-
-#counts3 <- data_new %>% drop_na(`zip_code`,`Category_2nd_Level`)%>%group_by(data_new$`Category_2nd_level`,  data_new$`zip_code`) %>% summarize(Freq =n())
-
-
-#colnames(try)<-c('Category_data','zip_code','Freq')
-
-#vcd::mosaic(factor(Category_data)~zip_code,direction = c('v','h'),try,rot_labels=c(0,90,0,0))
-```
 
 ```{r}
 data_new<-subset(food,food$zip_code %in% c(10036,10019,10018,10020))
-data_new<- subset(data_new,data_new$Category_2nd_Level %in% c('North American','Deli','Europe','Asian'))
+data_new<- subset(data_new,data_new$Category_2nd_Level %in% c('North American','Deli','European','Asian'))
 
 
 counts3 <- data_new %>% drop_na(`zip_code`,`Category_2nd_Level`)%>%group_by(data_new$`Category_2nd_Level`,  data_new$`zip_code`) %>% summarize(Freq =n())
@@ -266,25 +233,6 @@ vcd::mosaic(factor_cat~zip_code, direction = c('v','h'), counts3, rot_labels=c(0
 From the plot we can see that the majority data lies in 10019 and 10036. And district will influence the retuarants category. We can see that there are more North American restuarants in 10036, and relatively less other types retuarants.
 
 ### Parallel Coordinate
-
-```{r}
-library(GGally)
-library(ggplot2)
-library(tidyverse)
-
-parallel_data <-food[c(4,5,6,7,8,9,11)]
-
-parallel_data$Category_data<-factor(parallel_data$Category_data)
-#parallel_data$zip_code<-factor(parallel_data$zip_code)
-parallel_data$Category_2nd_Level<-factor(parallel_data$Category_2nd_Level)
-parallel_data$Price<-factor(parallel_data$Price)
-
-#ggparcoord(parallel_data ,alphaLines = .7, groupColumn = 'Category_2nd_Level', scale = "uniminmax")+ylab('Data')+xlab('Indicator')
-#ggparcoord(parallel_data ,alphaLines = .7, groupColumn = 'Category_2nd_Level', scale = "globalminmax")+ylab('Data')+xlab('Indicator')
-#ggparcoord(parallel_data ,alphaLines = .7, groupColumn = 'Category_2nd_Level', scale = "robust")+ylab('Data')+xlab('Indicator')
-#ggparcoord(parallel_data ,alphaLines = .7, groupColumn = 'Category_2nd_Level', scale = "std")+ylab('Data')+xlab('Indicator')
-
-```
 
 ```{r fig.width = 11, fig.height = 12.5, fig.align='left', message = FALSE, echo=FALSE, eval=FALSE}
 # See: http://www.buildingwidgets.com/blog/2015/1/30/week-04-interactive-parallel-coordinates-1
@@ -316,7 +264,7 @@ food_pl$Score <- round(food_pl$Score)
 food_pl$Rating <- round(food_pl$Rating)
 food_pl[, 1:9] <- lapply(food_pl[, 1:9], factor)
 food_plna <- na.omit(food_pl, cols=c("Score"))
-colnames(food_plna)
+#colnames(food_plna)
 food_al <- food_plna %>% 
   #drop_na(Score) %>%
   group_by(Category_2nd_Level, Rating, Price, Street_Num, zip_code, Review_Count,Category_data) %>% #
@@ -331,8 +279,9 @@ alluvial(food_al[, c("Category_2nd_Level", "Rating", "Price", "zip_code")], freq
                        unique(food_al$Category_2nd_Level)) ])  
          
 ```
+
 The majority of the restaurants belongs to North American food, and then comes European style restaurants and Deli. Most of the North American and European restaurants have ratings at 4 and above, and most of those restaurants are not too expensive having ratings at level 2 (around 20 to 30 dollars per person per meal). 
-Asian restaurants comes to the forth biggest group in our data. Their ratings range from 2 to 4. More than half of the Asian are ranked at level 4. Approximately,  95% of the Asian restaurants set the price levels within two dollar signs. 
+Asian restaurants comes to the fourth biggest group in our data. Their ratings range from 2 to 4. More than half of the Asian are ranked at level 4. Approximately,  95% of the Asian restaurants set the price levels within two dollar signs. 
 Coffee shops are usually with low ratings and low cost. 
 Steakhouse are all ranked high and the price level are also high. 
 More than 50% of the restaurants are located in zip code 10036 area. Their categories are mainly North American, European, coffee shop, Asian food, and steakhouse.
@@ -343,45 +292,54 @@ library(ggplot2)
 
 hf100 <- read.csv("data/hotel_food_100.csv")
 hf <- na.omit(hf100)
-
+hf$hotel_price_title <- paste("Hotel rating is ", hf$hotel_price, "")
 ggplot(hf, aes(food_price)) +
   geom_histogram(binwidth = 1, color ="blue", fill = "lightblue") +
-  facet_wrap(~hotel_price) +
-  ggtitle("Price distribution of hotels and neighbourhood restaurants") +
-  xlab("Dollar sign of restaurants") + 
-  ylab("Counts of hotels within 100^2pi sq meters") +
-  stat_bin(aes(y=..count.., label=..count..), geom="text", vjust=-.5, binwidth = 1) 
+  facet_wrap(~hotel_price_title) +
+  ggtitle("Price distribution at hotel price level and neighborhood restaurants") +
+  xlab("Price level of restaurants") + 
+  ylab("Counts of restaurants within 100 square meters") +
+  stat_bin(aes(y=..count.., label=..count..), geom="text", vjust=-.5, binwidth = 1) +
+  theme_grey(16)
 
 
+hf$hotel_rating2_title <- paste("Hotel rating level is ", hf$hotel_rating2, "")
 ggplot(hf, aes(food_rating)) +
   geom_histogram(binwidth = 1, color ="blue", fill = "lightblue") +
-  facet_wrap(~hotel_rating2, nrow = 2) +
-  ggtitle("Rating distribution of hotels and neighbourhood restaurants") +
+  facet_wrap(~hotel_rating2_title, nrow = 2) +
+  ggtitle("Rating distribution at hotel rating levle and neighborhood restaurants") +
   xlab("Rating level of restaurants") + 
-  ylab("Counts of hotels within 100^2pi sq meters") +
-  stat_bin(aes(y=..count.., label=..count..), geom="text", vjust=-.5, binwidth = 1) 
+  ylab("Counts of restaurants within 100 sqaure meters") +
+  stat_bin(aes(y=..count.., label=..count..), geom="text", vjust=-.5, binwidth = 1) +
+  theme_grey(16)
+
 
 ggplot(hf, aes(x = food_price,y = food_review_count)) +
   geom_col(fill = "lightblue") +
-  facet_wrap(~hotel_rating2, nrow = 2) +
-  ggtitle("Review Counts of hotels and neighbourhood restaurants") +
-  xlab("Review Counts of restaurants") + 
-  ylab("Counts of hotels within 100^2pi sq meters") 
+  facet_wrap(~hotel_rating2_title, nrow = 2) +
+  ggtitle("Review Counts of hotel Ratings and neighborhood restaurants") +
+  xlab("Restaurant Price") + 
+  ylab("Review Counts") 
 ```
 
 We could find some interesting facts here. 
 
-1) The higher the rating of the restaurant it is, it is not necessary that the ratings of the neighbourhood restaurants are higher. Taking the rating level 5 as an example, there are not that many reviews nor high ratings. One of the reasons might be not that many restaurants rated as 5 or 1. A lot of the hotels are rated as level 3.
+1) The higher the rating of the restaurant it is, it is not necessary that the ratings of the neighborhood restaurants are higher. Taking the rating level 5 as an example, there are not that many reviews nor high ratings. One of the reasons might be not that many restaurants rated as 5 or 1. A lot of the hotels are rated as level 3.
 
-2) There are a lot of restaurants rated as level 3, and the majority of neighbourhood restaurants around level 3 hotels are also on level 3.
+2) There are a lot of restaurants rated as level 3, and the majority of neighborhood restaurants around level 3 hotels are also on level 3.
 
 3) The restaurants in Time Square are not too expensive. The most expensive ones are with three dollar signs. 
 
 4) The distributions of each price level of hotels are very similar. 4 dollar sign restaurants are very rare, and the proportion of 2 dollar sign restaurants is nearly 50% of the data at each level. 
 
-5) Hotels with 2 dollar signs have the most counts in Time Square. 
+5) Hotels with 2 dollar signs have the most counts in Times Square. 
 
 # 5. Executive Summary
+
+When we travel, how would we choose hotels? Location and convenience come to the first place. The hotels in Times Square are usually the first option when tourists visit New York City and would like to experience the New Yorker life at Midtown, such as watching Broadway show, shopping, drinking at a bar, enjoying a meal at a steakhouse, and etc. There is nowhere else in the world like New York City presents all kinds of best gourmets from everywhere of the world. If we search the vocabulary “restaurants” in Yelp, there are Italian, American, Mexican, Portuguese, Asian fusion…  When we choose a hotel, if we take the foods surrounding the hotel into considerations, what kind of hotel we should choose? Also, gourmets play significant role during travelling. The food quality, restaurant environment, and price are the essential elements for us to judge if a restaurant is “good” or “bad”. If the rating of the hotel is high, are the ratings of the neighborhood restaurants also high? Does hotel affect the development of restaurants?
+
+We would answer the above inquires by analyzing datasets provided by NYC OpenData and Yelp. There are 332 restaurants and 41 hotels chosen located in Times Square. The first graph (“Histogram of Rating on Different District”) gives us a general view of the restaurant data we collected. According to Yelp rating system, there are 5 levels—1 is the lowest and 5 is the highest. Most of the restaurants are rated from level 2 to 4; there are only a few are rated less than 2 or above 4.5. The shape is left skewed, so we can say the majority of the restaurants provide high quality foods. The 10036 zip code area owe nearly half of the restaurants, and 10018 zip code area have the second largest restaurant number. One reason is 10036 area itself occupies half of the Times Square area; the other one would be those area are usually popular tourists attractions, such as Madame Tussauds and theaters. 
+
 ```{r echo=FALSE, eval=TRUE, fig.width=10, message=FALSE}
 # histogram
 ggplot(data = food, aes(food$Rating, fill=factor(food$zip_code))) + 
@@ -393,13 +351,15 @@ ggplot(data = food, aes(food$Rating, fill=factor(food$zip_code))) +
   theme_grey(16)
 ```
 
+Here comes another question. What kind of food dominates Times Square food industry? If we take a look at the graph “Mosaic of Category vs. Zip Code”, it demonstrates how the food categories scatters in Times Square area. North American restaurants have the largest portion in the food industry in Times Square, and Delis have the second largest, while European and Asian become the third and the fourth largest category. Majority of the restaurants are located within 10019 and 10036 zip code area, while there are more North American style restaurants in 10036 than 10019 zip code area. Inside 10036 area, Asian restaurant and Deli have smaller portion than 10019 zip code area. 
+
 ```{r echo=FALSE, eval=TRUE}
 # mosaic
 vcd::mosaic(factor_cat~zip_code, direction = c('v','h'), counts3, rot_labels=c(0,90,0,0),
             offset_varnames = c(left = 5), offset_labels = c(left = 0),
             just_labels = c("center","right"), margins = c(left = 5), 
             set_varname=c(zip_code="Zip Code", factor_cat="Category"),
-            main="Mosaic of Catogory vs Zip Code")
+            main="Mosaic of Category vs. Zip Code")
 
 ```
 
@@ -430,35 +390,43 @@ alluvial(food_al[, c("Category_2nd_Level", "Rating", "Price", "zip_code")], freq
 mtext("Category Parallel Coordinate Plot", 3, line=3, font=16)
 ```
 
+Alluvial diagram, or called Parallel coordinate plot, presents us the overall information we would be interested in and how the data we collected after we combine food categories, ratings, price levels, and locations together. If we are not sure what to eat tonight, we could look at the Alluvial diagram and make a decision. Most of the restaurants in Times Square are North American, and the majority of them are rated at level 4 but with low cost (2 or 3 dollar-sign according to Yelp), located in zip code area 10036. So, we might go to a North American restaurant with ratings at level 4 and price level at 2 and located at 10036 areas after we finish watching a show in the Theater District. If we would like to pick a high-quality steakhouse, we could just walk into any steakhouse we come across in Times Square, but before we do that, we might want to yelp it first; although 90% of them are rated very high, only few are served with low quality. Likewise, if we want something quick and not too expensive, we can stop by a Deli, because as the top 3 largest categories in Times Square, Delis offer low-cost meals, and  spread over all the area, including all zip codes. 
+
+After we watch the Broadway show, fantastic North American dinner, it is time to take a rest. Are there any high rating hotels near the fancy restaurant we just have our dinner? Let’s take a look at the histogram of “Price distribution at each hotel price level and neighborhood restaurants”. As for each of hotel, we find out its surrounded restaurants within a circle area with 100 meters as radius; and then we make a comparison to see how the restaurants spread around each hotel through grouping by hotel price levels.  Generally speaking, the shape of how expensive restaurants distributed are nearly identical. No matter how the price level of the hotels is, restaurants with price level 2 are nearly half of the neighborhood restaurants; restaurants with price level 1 are the second largest for each hotel cluster. At each price level, there are only few restaurants are 4 dollar-sign. Overall, the price of hotels is not too expensive in Times Square. 
+
 ```{r echo=FALSE, eval=TRUE, fig.width=10}
 library("gridExtra")
 library(tidyverse)
 library(ggplot2)
 hf100 <- read.csv("data/hotel_food_100.csv")
 hf <- na.omit(hf100)
-
+hf$hotel_price_title <- paste("Hotel rating is ", hf$hotel_price, "")
 p1 <- ggplot(hf, aes(food_price)) +
   geom_histogram(binwidth = 1, color ="blue", fill = "lightblue") +
-  facet_wrap(~hotel_price) +
-  ggtitle("Price distribution of hotels and neighbourhood restaurants") +
-  xlab("Dollar sign of restaurants") + 
-  ylab("Counts of hotels within 100^2pi sq meters") +
+  facet_wrap(~hotel_price_title) +
+  ggtitle("Price distribution at each hotel price level and neighborhood restaurants") +
+  xlab("Price level of restaurants") + 
+  ylab("Counts of restaurants within 100 square meters") +
   stat_bin(aes(y=..count.., label=..count..), geom="text", vjust=-.5, binwidth = 1) +
   theme_grey(16)
 
-
+hf$hotel_rating2_title <- paste("Hotel rating level is ", hf$hotel_rating2, "")
 p2 <- ggplot(hf, aes(food_rating)) +
   geom_histogram(binwidth = 1, color ="blue", fill = "lightblue") +
-  facet_wrap(~hotel_rating2, nrow = 2) +
-  ggtitle("Rating distribution of hotels and neighbourhood restaurants") +
+  facet_wrap(~hotel_rating2_title, nrow = 2) +
+  ggtitle("Rating distribution at each hotel rating level and neighborhood restaurants") +
   xlab("Rating level of restaurants") + 
-  ylab("Counts of hotels within 100^2pi sq meters") +
+  ylab("Counts of restaurants within 100 sqaure meters") +
   stat_bin(aes(y=..count.., label=..count..), geom="text", vjust=-.5, binwidth = 1) +
   theme_grey(16)
   
 
 grid.arrange(p1, p2, ncol=2, nrow=1)
 ```
+
+Let’s talk about the ratings of hotels and restaurants (“Rating distribution at each hotel rating level and neighborhood restaurants”). Likewise, the restaurant rating distribution has almost the same shape at each hotel rating level. Obviously, most of hotels and restaurants are rated as level 3, and more than half of the restaurants at level 3 hotels are also rated as level 3.
+
+To conclude, North American and European restaurants prefer to locate in 10036 zip code area. Most restaurants and hotels provide high quality service with 3 to 4 stars, but of course, there are some low rating hotels and restaurants rated only 1 or 2 stars, and we might want to avoid those businesses when choosing a place to eat or accommodate. Speaking of the correlation between hotels and their neighborhood restaurants, there is no strong evidence showing the relationship exists. The ratings and price levels of restaurants and hotels are evenly spreading. What we have done so far is analyzing hotels as a group, such as in the group of price level at 1, 2, 3, which might average out some special and individual cases.
 
 
 # 6. Interactive Component: D3, jQuery, and Bootstrap 
