@@ -395,13 +395,12 @@ Alluvial diagram, or called Parallel coordinate plot, presents us the overall in
 After we watch the Broadway show, fantastic North American dinner, it is time to take a rest. Are there any high rating hotels near the fancy restaurant we just have our dinner? Let’s take a look at the histogram of “Price distribution at each hotel price level and neighborhood restaurants”. As for each of hotel, we find out its surrounded restaurants within a circle area with 100 meters as radius; and then we make a comparison to see how the restaurants spread around each hotel through grouping by hotel price levels.  Generally speaking, the shape of how expensive restaurants distributed are nearly identical. No matter how the price level of the hotels is, restaurants with price level 2 are nearly half of the neighborhood restaurants; restaurants with price level 1 are the second largest for each hotel cluster. At each price level, there are only few restaurants are 4 dollar-sign. Overall, the price of hotels is not too expensive in Times Square. 
 
 ```{r echo=FALSE, eval=TRUE, fig.width=10}
-library("gridExtra")
 library(tidyverse)
 library(ggplot2)
 hf100 <- read.csv("data/hotel_food_100.csv")
 hf <- na.omit(hf100)
 hf$hotel_price_title <- paste("Hotel rating is ", hf$hotel_price, "")
-p1 <- ggplot(hf, aes(food_price)) +
+ggplot(hf, aes(food_price)) +
   geom_histogram(binwidth = 1, color ="blue", fill = "lightblue") +
   facet_wrap(~hotel_price_title) +
   ggtitle("Price distribution at each hotel price level and neighborhood restaurants") +
@@ -409,9 +408,13 @@ p1 <- ggplot(hf, aes(food_price)) +
   ylab("Counts of restaurants within 100 square meters") +
   stat_bin(aes(y=..count.., label=..count..), geom="text", vjust=-.5, binwidth = 1) +
   theme_grey(16)
+```
 
+Let’s talk about the ratings of hotels and restaurants (“Rating distribution at each hotel rating level and neighborhood restaurants”). Likewise, the restaurant rating distribution has almost the same shape at each hotel rating level. Obviously, most of hotels and restaurants are rated as level 3, and more than half of the restaurants at level 3 hotels are also rated as level 3.
+
+```{r echo=FALSE, eval=TRUE, fig.width=10}
 hf$hotel_rating2_title <- paste("Hotel rating level is ", hf$hotel_rating2, "")
-p2 <- ggplot(hf, aes(food_rating)) +
+ggplot(hf, aes(food_rating)) +
   geom_histogram(binwidth = 1, color ="blue", fill = "lightblue") +
   facet_wrap(~hotel_rating2_title, nrow = 2) +
   ggtitle("Rating distribution at each hotel rating level and neighborhood restaurants") +
@@ -419,12 +422,7 @@ p2 <- ggplot(hf, aes(food_rating)) +
   ylab("Counts of restaurants within 100 sqaure meters") +
   stat_bin(aes(y=..count.., label=..count..), geom="text", vjust=-.5, binwidth = 1) +
   theme_grey(16)
-  
-
-grid.arrange(p1, p2, ncol=2, nrow=1)
 ```
-
-Let’s talk about the ratings of hotels and restaurants (“Rating distribution at each hotel rating level and neighborhood restaurants”). Likewise, the restaurant rating distribution has almost the same shape at each hotel rating level. Obviously, most of hotels and restaurants are rated as level 3, and more than half of the restaurants at level 3 hotels are also rated as level 3.
 
 To conclude, North American and European restaurants prefer to locate in 10036 zip code area. Most restaurants and hotels provide high quality service with 3 to 4 stars, but of course, there are some low rating hotels and restaurants rated only 1 or 2 stars, and we might want to avoid those businesses when choosing a place to eat or accommodate. Speaking of the correlation between hotels and their neighborhood restaurants, there is no strong evidence showing the relationship exists. The ratings and price levels of restaurants and hotels are evenly spreading. What we have done so far is analyzing hotels as a group, such as in the group of price level at 1, 2, 3, which might average out some special and individual cases.
 
